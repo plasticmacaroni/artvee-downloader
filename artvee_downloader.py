@@ -36,20 +36,21 @@ def login(session):
     soup = BeautifulSoup(response.content, 'html.parser')
     nonce = soup.find('input', {'name': 'ihc_login_nonce'})['value']
 
-    # Create the config.yaml file if it doesn't exist
+    # Create the config.yaml file if it doesn't exist, with an empty username and password
     if not os.path.exists('config.yaml'):
         with open('config.yaml', 'w') as file:
-            yaml.dump({}, file)
+            yaml.dump({'username': '', 'password': ''}, file)
 
     # Load the config.yaml file
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
 
-    # First, check if it's empty, and ask for user input if so
-    if not config['username']:
+    # First, check if it's an empty string, and ask for user input if so
+    if not config['username'] or config['username'].strip() == '':
         config['username'] = input("Enter your username: ")
-    if not config['password']:
+    if not config['password'] or config['password'].strip() == '':
         config['password'] = input("Enter your password: ")
+    
     # Notify the user these can be changed in the config.yaml file
     if not config['username'] or not config['password']:
         print("You must enter a username and password in the config.yaml file, which you can manually edit the config.yaml file or run this script again to enter them.")
@@ -71,7 +72,7 @@ def login(session):
         print("Successfully logged in!")
     else:
         print("Login failed!")
-        print(response.text)
+        # print(response.text)
 
     print("Logged in successfully:", response.ok)
 
